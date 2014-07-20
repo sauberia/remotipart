@@ -108,14 +108,13 @@
         iframe = null,
         name = "iframe-" + $.now(),
         files = $(options.files).filter(":file:enabled"),
-        markers = null,
         accepts;
 
     // This function gets called after a successful submission or an abortion
     // and should revert all changes made to the page to enable the
     // submission via this transport.
     function cleanUp() {
-      markers.prop('disabled', false);
+      files.prop('disabled', false);
       form.remove();
       iframe.bind("load", function() { iframe.remove(); });
       iframe.attr("src", "javascript:false;");
@@ -161,14 +160,12 @@
       $("<input type='hidden' name='X-Http-Accept'>")
         .attr("value", accepts).appendTo(form);
 
-      // Move the file fields into the hidden form, but first remember their
-      // original locations in the document by replacing them with disabled
-      // clones. This should also avoid introducing unwanted changes to the
-      // page layout during submission.
-      markers = files.after(function(idx) {
-        return $(this).clone().prop("disabled", true);
-      }).next();
-      files.appendTo(form);
+      // Copy the file fields into the hidden form, and disable the
+      // originals.
+
+      files.clone().appendTo(form);
+      files.prop("disabled", true);
+
 
       return {
 
